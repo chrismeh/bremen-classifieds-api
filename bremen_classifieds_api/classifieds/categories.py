@@ -18,7 +18,7 @@ def parse_categories(html: str) -> List[Category]:
     soup = BeautifulSoup(html, "html.parser")
     categories = soup.select(".rubriken_list li a")
 
-    return [parse_category(categories[0])]
+    return [parse_category(category) for category in categories]
 
 
 def parse_category(soup: Tag) -> Category:

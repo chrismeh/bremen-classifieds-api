@@ -23,9 +23,25 @@ def parse_categories(html: str) -> List[Category]:
 
 def parse_category(soup: Tag) -> Category:
     return Category(
-        category_type=soup.attrs["href"].split("/")[1],
-        slug=soup.attrs["href"].split("/").pop().replace(".html", ""),
-        title=re.sub(r" \d*$", "", ' '.join(soup.text.split())),
-        classified_count=int(soup.select_one(".rubriken_count").text),
+        category_type=parse_category_type(soup),
+        slug=parse_category_slug(soup),
+        title=parse_category_title(soup),
+        classified_count=parse_category_classifieds_count(soup),
         url="https://schwarzesbrett.bremen.de" + soup.attrs["href"],
     )
+
+
+def parse_category_type(soup: Tag) -> str:
+    return soup.attrs["href"].split("/")[1]
+
+
+def parse_category_slug(soup: Tag) -> str:
+    return soup.attrs["href"].split("/").pop().replace(".html", "")
+
+
+def parse_category_title(soup: Tag) -> str:
+    return re.sub(r" \d*$", "", ' '.join(soup.text.split()))
+
+
+def parse_category_classifieds_count(soup: Tag) -> int:
+    return int(soup.select_one(".rubriken_count").text)

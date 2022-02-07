@@ -21,3 +21,8 @@ def html_for_multiple_categories() -> str:
 @pytest.fixture
 def html_for_single_classified() -> str:
     return fixture("single_classified.html")
+
+
+@pytest.fixture
+def html_for_multiple_classifieds() -> str:
+    return fixture("multiple_classifieds.html")

@@ -1,9 +1,9 @@
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from typing import List
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 
 @dataclass
@@ -21,16 +21,52 @@ class Classified:
 
 def parse_classifieds(html: str) -> List[Classified]:
     soup = BeautifulSoup(html, "html.parser")
-    classified = soup.select(".eintraege_list li a")[0]
+    classifieds = soup.select(".eintraege_list li a")
 
-    return [Classified(
-        id=int(re.match(r".+?(\d+)\.html$", classified.attrs["href"]).group(1)),
-        category_type=classified.attrs["href"].split("/")[1],
-        category_slug=classified.attrs["href"].split("/")[2],
-        slug=re.sub(r"-(\d+)\.html", "", classified.attrs["href"].split("/").pop()),
-        title=re.sub(r" (?:\d{2}\.?){3}", "", ' '.join(classified.text.split())),
-        date=datetime.strptime(classified.select_one(".list_date").text.strip(), "%d.%m.%y").date(),
-        url="https://schwarzesbrett.bremen.de" + classified.attrs["href"],
-        has_picture=classified.select_one(".fa-camera") is not None,
-        is_commercial=classified.select_one(".fa-eur") is not None,
-    )]
+    return [parse_classified(classified) for classified in classifieds]
+
+
+def parse_classified(soup: Tag) -> Classified:
+    return Classified(
+        id=parse_classified_id(soup),
+        category_type=parse_classified_category_type(soup),
+        category_slug=parse_classified_category_slug(soup),
+        slug=parse_classified_slug(soup),
+        title=parse_classified_title(soup),
+        date=parse_classified_date(soup),
+        url="https://schwarzesbrett.bremen.de" + soup.attrs["href"],
+        has_picture=parse_classified_picture_flag(soup),
+        is_commercial=parse_classified_commercial_flag(soup),
+    )
+
+
+def parse_classified_id(soup: Tag) -> int:
+    return int(re.match(r".+?(\d+)\.html$", soup.attrs["href"]).group(1))
+
+
+def parse_classified_category_type(soup: Tag) -> str:
+    return soup.attrs["href"].split("/")[1]
+
+
+def parse_classified_category_slug(soup: Tag) -> str:
+    return soup.attrs["href"].split("/")[2]
+
+
+def parse_classified_slug(soup: Tag) -> str:
+    return re.sub(r"-(\d+)\.html", "", soup.attrs["href"].split("/").pop())
+
+
+def parse_classified_title(soup: Tag) -> str:
+    return re.sub(r" (?:\d{2}\.?){3}", "", ' '.join(soup.text.split()))
+
+
+def parse_classified_date(soup: Tag) -> date:
+    return datetime.strptime(soup.select_one(".list_date").text.strip(), "%d.%m.%y").date()
+
+
+def parse_classified_picture_flag(soup: Tag) -> bool:
+    return soup.select_one(".fa-camera") is not None
+
+
+def parse_classified_commercial_flag(soup: Tag) -> bool:
+    return soup.select_one(".fa-eur") is not None

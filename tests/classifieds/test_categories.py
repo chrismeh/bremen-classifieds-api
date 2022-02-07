@@ -1,7 +1,8 @@
 from bremen_classifieds_api.classifieds import Category, parse_categories
+from tests.classifieds.conftest import fixture
 
 
-def test_parse_categories_with_single_category(html_for_single_category):
+def test_parse_categories_with_single_category():
     expected_categories = [
         Category(
             category_type="verkauf-angebote",
@@ -12,10 +13,10 @@ def test_parse_categories_with_single_category(html_for_single_category):
         )
     ]
 
-    assert parse_categories(html_for_single_category) == expected_categories
+    assert parse_categories(fixture("single_category.html")) == expected_categories
 
 
-def test_parse_categories_with_multiple_categories(html_for_multiple_categories):
+def test_parse_categories_with_multiple_categories():
     expected_categories = [
         Category(
             category_type="verkauf-angebote",
@@ -40,4 +41,4 @@ def test_parse_categories_with_multiple_categories(html_for_multiple_categories)
         ),
     ]
 
-    assert parse_categories(html_for_multiple_categories) == expected_categories
+    assert parse_categories(fixture("multiple_categories.html")) == expected_categories

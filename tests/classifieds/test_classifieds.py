@@ -1,9 +1,10 @@
 from datetime import date
 
 from bremen_classifieds_api.classifieds import Classified, parse_classifieds
+from tests.classifieds.conftest import fixture
 
 
-def test_parse_classified_with_single_classified(html_for_single_classified):
+def test_parse_classified_with_single_classified():
     expected_classifieds = [
         Classified(
             id=20346305,
@@ -17,22 +18,22 @@ def test_parse_classified_with_single_classified(html_for_single_classified):
         )
     ]
 
-    assert parse_classifieds(html_for_single_classified) == expected_classifieds
+    assert parse_classifieds(fixture("single_classified.html")) == expected_classifieds
 
 
-def test_parse_classified_with_classified_with_picture(html_for_single_classified_with_picture):
-    classifieds = parse_classifieds(html_for_single_classified_with_picture)
+def test_parse_classified_with_classified_with_picture():
+    classifieds = parse_classifieds(fixture("single_classified_with_picture.html"))
 
     assert classifieds[0].has_picture is True
 
 
-def test_parse_classified_with_classified_non_commercial(html_for_single_classified_non_commercial):
-    classifieds = parse_classifieds(html_for_single_classified_non_commercial)
+def test_parse_classified_with_classified_non_commercial():
+    classifieds = parse_classifieds(fixture("single_classified_non_commercial.html"))
 
     assert classifieds[0].is_commercial is False
 
 
-def test_parse_classified_with_multiple_classifieds(html_for_multiple_classifieds):
+def test_parse_classified_with_multiple_classifieds():
     expected_classifieds = [
         Classified(
             id=20346305,
@@ -67,4 +68,4 @@ def test_parse_classified_with_multiple_classifieds(html_for_multiple_classified
 
     ]
 
-    assert parse_classifieds(html_for_multiple_classifieds) == expected_classifieds
+    assert parse_classifieds(fixture("multiple_classifieds.html")) == expected_classifieds

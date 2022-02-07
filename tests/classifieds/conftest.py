@@ -24,5 +24,15 @@ def html_for_single_classified() -> str:
 
 
 @pytest.fixture
+def html_for_single_classified_with_picture() -> str:
+    return fixture("single_classified_with_picture.html")
+
+
+@pytest.fixture
+def html_for_single_classified_non_commercial() -> str:
+    return fixture("single_classified_non_commercial.html")
+
+
+@pytest.fixture
 def html_for_multiple_classifieds() -> str:
     return fixture("multiple_classifieds.html")

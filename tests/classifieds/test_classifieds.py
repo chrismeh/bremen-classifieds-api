@@ -20,6 +20,18 @@ def test_parse_classified_with_single_classified(html_for_single_classified):
     assert parse_classifieds(html_for_single_classified) == expected_classifieds
 
 
+def test_parse_classified_with_classified_with_picture(html_for_single_classified_with_picture):
+    classifieds = parse_classifieds(html_for_single_classified_with_picture)
+
+    assert classifieds[0].has_picture is True
+
+
+def test_parse_classified_with_classified_non_commercial(html_for_single_classified_non_commercial):
+    classifieds = parse_classifieds(html_for_single_classified_non_commercial)
+
+    assert classifieds[0].is_commercial is False
+
+
 def test_parse_classified_with_multiple_classifieds(html_for_multiple_classifieds):
     expected_classifieds = [
         Classified(

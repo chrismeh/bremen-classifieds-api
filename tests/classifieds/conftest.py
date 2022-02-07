@@ -16,3 +16,8 @@ def html_for_single_category() -> str:
 @pytest.fixture
 def html_for_multiple_categories() -> str:
     return fixture("multiple_categories.html")
+
+
+@pytest.fixture
+def html_for_single_classified() -> str:
+    return fixture("single_classified.html")

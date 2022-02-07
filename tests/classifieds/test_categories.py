@@ -1,4 +1,4 @@
-from bremen_classifieds_api.classifieds.categories import Category, parse_categories
+from bremen_classifieds_api.classifieds import Category, parse_categories
 
 
 def test_parse_categories_with_single_category(html_for_single_category):

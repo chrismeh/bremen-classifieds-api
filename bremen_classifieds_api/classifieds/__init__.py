@@ -1,0 +1,1 @@
+from bremen_classifieds_api.classifieds.categories import Category, parse_categories

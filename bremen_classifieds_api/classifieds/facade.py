@@ -1,6 +1,8 @@
 from typing import Protocol, List, Optional
 
-from bremen_classifieds_api.classifieds import Client, Category, Classified
+from bremen_classifieds_api.classifieds.categories import Category
+from bremen_classifieds_api.classifieds.classifieds import Classified
+from bremen_classifieds_api.classifieds.client import Client
 
 
 class Cache(Protocol):

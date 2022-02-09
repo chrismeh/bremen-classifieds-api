@@ -1,3 +1,2 @@
-from bremen_classifieds_api.classifieds.categories import Category, parse_categories
-from bremen_classifieds_api.classifieds.classifieds import Classified, parse_classifieds
-from bremen_classifieds_api.classifieds.client import Client, HttpError
+from bremen_classifieds_api.classifieds.client import Client
+from bremen_classifieds_api.classifieds.facade import Facade

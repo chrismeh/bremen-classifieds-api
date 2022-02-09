@@ -3,8 +3,7 @@ import dataclasses
 import requests
 from flask import jsonify, Blueprint, abort
 
-from bremen_classifieds_api.classifieds import Client
-from bremen_classifieds_api.classifieds.facade import Facade as ClassifiedsFacade
+import bremen_classifieds_api.classifieds as classifieds
 from bremen_classifieds_api.extensions import cache
 
 bp = Blueprint("categories", __name__, url_prefix="/api/categories")
@@ -12,8 +11,8 @@ bp = Blueprint("categories", __name__, url_prefix="/api/categories")
 
 @bp.get("/")
 def get_categories():
-    client = Client(requests.session())
-    facade = ClassifiedsFacade(client, cache)
+    client = classifieds.Client(requests.session())
+    facade = classifieds.Facade(client, cache)
 
     categories = facade.get_categories()
     return jsonify([dataclasses.asdict(category) for category in categories])
@@ -21,11 +20,11 @@ def get_categories():
 
 @bp.get("/<category_type>/<slug>")
 def get_classifieds(category_type: str, slug: str):
-    client = Client(requests.session())
-    facade = ClassifiedsFacade(client, cache)
+    client = classifieds.Client(requests.session())
+    facade = classifieds.Facade(client, cache)
 
-    classifieds = facade.get_classifieds_for_category(category_type, slug)
-    if classifieds is None:
+    classifieds_list = facade.get_classifieds_for_category(category_type, slug)
+    if classifieds_list is None:
         abort(404)
 
-    return jsonify([dataclasses.asdict(classified) for classified in classifieds])
+    return jsonify([dataclasses.asdict(classified) for classified in classifieds_list])

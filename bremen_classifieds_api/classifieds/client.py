@@ -2,7 +2,8 @@ from typing import List
 
 import requests
 
-from bremen_classifieds_api.classifieds import Category, parse_categories, Classified, parse_classifieds
+from bremen_classifieds_api.classifieds.categories import parse_categories, Category
+from bremen_classifieds_api.classifieds.classifieds import Classified, parse_classifieds
 
 
 class HttpError(Exception):

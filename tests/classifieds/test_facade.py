@@ -1,7 +1,8 @@
 import datetime
 
-from bremen_classifieds_api.classifieds import Category, Classified
-from bremen_classifieds_api.classifieds.facade import Facade
+from bremen_classifieds_api.classifieds import Facade
+from bremen_classifieds_api.classifieds.categories import Category
+from bremen_classifieds_api.classifieds.classifieds import Classified
 
 
 def test_get_categories_return_categories_on_cache_hit(client, cache):

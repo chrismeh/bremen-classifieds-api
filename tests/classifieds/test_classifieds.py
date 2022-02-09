@@ -1,6 +1,6 @@
 from datetime import date
 
-from bremen_classifieds_api.classifieds import Classified, parse_classifieds
+from bremen_classifieds_api.classifieds.classifieds import Classified, parse_classifieds
 from tests.classifieds.conftest import fixture
 
 

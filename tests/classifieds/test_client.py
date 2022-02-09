@@ -2,7 +2,9 @@ import httpretty
 import pytest
 import requests
 
-from bremen_classifieds_api.classifieds import Category, Client, HttpError, Classified
+from bremen_classifieds_api.classifieds.categories import Category
+from bremen_classifieds_api.classifieds.classifieds import Classified
+from bremen_classifieds_api.classifieds.client import Client, HttpError
 from tests.classifieds.conftest import fixture
 
 

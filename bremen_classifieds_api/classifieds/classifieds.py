@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime, date
-from typing import List
+from typing import List, Optional
 
 from bs4 import BeautifulSoup, Tag
 

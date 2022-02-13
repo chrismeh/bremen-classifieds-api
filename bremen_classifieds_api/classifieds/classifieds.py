@@ -23,21 +23,26 @@ def parse_classifieds(html: str) -> List[Classified]:
     soup = BeautifulSoup(html, "html.parser")
     classifieds = soup.select(".eintraege_list li a")
 
-    return [parse_classified(classified) for classified in classifieds]
+    classifieds = [parse_classified(classified) for classified in classifieds]
+    return list(filter(lambda c: c is not None, classifieds))
 
 
-def parse_classified(soup: Tag) -> Classified:
-    return Classified(
-        id=parse_classified_id(soup),
-        category_type=parse_classified_category_type(soup),
-        category_slug=parse_classified_category_slug(soup),
-        slug=parse_classified_slug(soup),
-        title=parse_classified_title(soup),
-        date=parse_classified_date(soup),
-        url="https://schwarzesbrett.bremen.de" + soup.attrs["href"],
-        has_picture=parse_classified_picture_flag(soup),
-        is_commercial=parse_classified_commercial_flag(soup),
-    )
+def parse_classified(soup: Tag) -> Optional[Classified]:
+    try:
+        return Classified(
+            id=parse_classified_id(soup),
+            category_type=parse_classified_category_type(soup),
+            category_slug=parse_classified_category_slug(soup),
+            slug=parse_classified_slug(soup),
+            title=parse_classified_title(soup),
+            date=parse_classified_date(soup),
+            url="https://schwarzesbrett.bremen.de" + soup.attrs["href"],
+            has_picture=parse_classified_picture_flag(soup),
+            is_commercial=parse_classified_commercial_flag(soup),
+        )
+    except ValueError as err:
+        print(f"error when parsing classified at {soup.attrs['href']}: {err}")
+        return None
 
 
 def parse_classified_id(soup: Tag) -> int:

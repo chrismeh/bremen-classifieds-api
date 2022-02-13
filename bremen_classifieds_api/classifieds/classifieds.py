@@ -19,6 +19,13 @@ class Classified:
     is_commercial: bool = False
 
 
+@dataclass
+class Filter:
+    search: Optional[str] = None
+    has_picture: Optional[bool] = None
+    is_commercial: Optional[bool] = None
+
+
 def parse_classifieds(html: str) -> List[Classified]:
     soup = BeautifulSoup(html, "html.parser")
     classifieds = soup.select(".eintraege_list li a")

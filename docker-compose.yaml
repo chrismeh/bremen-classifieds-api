@@ -5,11 +5,10 @@ services:
     build:
       dockerfile: ops/api/Dockerfile
       context: .
+    environment:
+      - FLASK_APP=bremen_classifieds_api.app
     volumes:
       - ./:/app
-    environment:
-      - FLASK_DEBUG=1
-      - FLASK_ENV=development
     ports:
       - "5000:5000"
     depends_on:

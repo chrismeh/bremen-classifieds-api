@@ -12,3 +12,18 @@ services:
       - FLASK_ENV=development
     ports:
       - "5000:5000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - ./ops/db:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=classifieds
+      - MYSQL_USER=classifieds
+      - MYSQL_PASSWORD=classifieds
+      - MYSQL_ROOT_PASSWORD=classifieds-root
+    ports:
+      - "3306:3306"

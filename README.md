@@ -7,6 +7,7 @@ Thin API layer on top of https://schwarzesbrett.bremen.de/, still work in progre
 Run with docker-compose:
 
 ```shell
+$ cp .env.example .env
 $ docker-compose up --build
 ```
 

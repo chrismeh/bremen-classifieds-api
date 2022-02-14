@@ -2,6 +2,8 @@ FROM python:alpine
 
 ENV FLASK_APP=bremen_classifieds_api.app
 
+RUN apk add --no-cache --virtual .pynacl_deps build-base python3-dev libffi-dev
+
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 

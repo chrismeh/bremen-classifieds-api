@@ -3,7 +3,8 @@ from flask import jsonify, Blueprint, abort, request
 
 import bremen_classifieds_api.classifieds as classifieds
 from bremen_classifieds_api.classifieds.classifieds import Filter
-from bremen_classifieds_api.extensions import cache
+from bremen_classifieds_api.classifieds.db.db import CategoryRepository
+from bremen_classifieds_api.extensions import cache, db
 from bremen_classifieds_api.schemas import CategorySchema, ClassifiedsSchema
 
 bp = Blueprint("categories", __name__, url_prefix="/api/categories")
@@ -11,10 +12,10 @@ bp = Blueprint("categories", __name__, url_prefix="/api/categories")
 
 @bp.get("/")
 def get_categories():
-    client = classifieds.Client(requests.session())
-    facade = classifieds.Facade(client, cache)
+    repo = CategoryRepository(db.connection)
+    categories = repo.find_all()
 
-    return jsonify(CategorySchema(many=True).dump(facade.get_categories()))
+    return jsonify(CategorySchema(many=True).dump(categories))
 
 
 @bp.get("/<category_type>/<slug>")

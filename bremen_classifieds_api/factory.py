@@ -1,7 +1,7 @@
 from flask import Flask
 
 from bremen_classifieds_api.blueprints import bp as categories_blueprint
-from bremen_classifieds_api.extensions import cache, db
+from bremen_classifieds_api.extensions import db, ma
 
 
 def create_app() -> Flask:
@@ -15,8 +15,8 @@ def create_app() -> Flask:
 
 
 def register_extensions(app: Flask):
-    cache.init_app(app)
     db.init_app(app)
+    ma.init_app(app)
 
 
 def register_blueprints(app: Flask):

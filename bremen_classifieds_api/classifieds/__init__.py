@@ -1,2 +1,1 @@
 from bremen_classifieds_api.classifieds.client import Client
-from bremen_classifieds_api.classifieds.facade import Facade

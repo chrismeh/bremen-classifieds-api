@@ -1,6 +1,5 @@
 import mysql.connector
 from flask import _app_ctx_stack, current_app
-from flask_caching import Cache
 from flask_marshmallow import Marshmallow
 
 
@@ -46,6 +45,5 @@ class MySQL:
             ctx.mysql.close()
 
 
-cache = Cache()
 ma = Marshmallow()
 db = MySQL()

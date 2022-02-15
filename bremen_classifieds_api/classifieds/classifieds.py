@@ -6,6 +6,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup, Tag
 
 
+# TODO: This data structure doesn't work well with the MySQL database, fix me.
 @dataclass
 class Classified:
     id: int

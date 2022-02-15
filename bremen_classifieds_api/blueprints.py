@@ -25,6 +25,7 @@ def get_classifieds_by_category(category_type: str, slug: str):
     if category is None:
         abort(404)
 
+    # TODO: Make me filterable again!
     classifieds_list = classifieds_repo.find_all(category)
     return jsonify(ClassifiedsSchema(many=True).dump(classifieds_list))
 

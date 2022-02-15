@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint, abort, request
 
 from bremen_classifieds_api.classifieds.classifieds import Filter
-from bremen_classifieds_api.classifieds.db.db import CategoryRepository, ClassifiedRepository
+from bremen_classifieds_api.classifieds.db import CategoryRepository, ClassifiedRepository
 from bremen_classifieds_api.extensions import db
 from bremen_classifieds_api.schemas import CategorySchema, ClassifiedsSchema
 

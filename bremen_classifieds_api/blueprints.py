@@ -1,10 +1,8 @@
-import requests
 from flask import jsonify, Blueprint, abort, request
 
-import bremen_classifieds_api.classifieds as classifieds
 from bremen_classifieds_api.classifieds.classifieds import Filter
-from bremen_classifieds_api.classifieds.db.db import CategoryRepository
-from bremen_classifieds_api.extensions import cache, db
+from bremen_classifieds_api.classifieds.db.db import CategoryRepository, ClassifiedRepository
+from bremen_classifieds_api.extensions import db
 from bremen_classifieds_api.schemas import CategorySchema, ClassifiedsSchema
 
 bp = Blueprint("categories", __name__, url_prefix="/api/categories")
@@ -20,13 +18,14 @@ def get_categories():
 
 @bp.get("/<category_type>/<slug>")
 def get_classifieds_by_category(category_type: str, slug: str):
-    client = classifieds.Client(requests.session())
-    facade = classifieds.Facade(client, cache)
+    category_repo = CategoryRepository(db.connection)
+    classifieds_repo = ClassifiedRepository(db.connection)
 
-    classifieds_list = facade.get_classifieds_for_category(category_type, slug, parse_classifieds_filter())
-    if classifieds_list is None:
+    category = category_repo.find_by_slug(category_type, slug)
+    if category is None:
         abort(404)
 
+    classifieds_list = classifieds_repo.find_all(category)
     return jsonify(ClassifiedsSchema(many=True).dump(classifieds_list))
 
 

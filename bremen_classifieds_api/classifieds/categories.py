@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from bs4 import BeautifulSoup, Tag
 
@@ -12,6 +12,7 @@ class Category:
     title: str
     classified_count: int
     url: str
+    id: Optional[int] = None
 
 
 def parse_categories(html: str) -> List[Category]:

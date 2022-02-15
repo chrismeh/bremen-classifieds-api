@@ -16,11 +16,12 @@ itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
 marshmallow==3.14.1
+mysql-connector-python==8.0.28
 packaging==21.3
 pluggy==1.0.0
+protobuf==3.19.4
 py==1.11.0
 pycparser==2.21
-PyMySQL==1.0.2
 pyparsing==3.0.7
 pytest==7.0.0
 python-dotenv==0.19.2

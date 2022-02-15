@@ -1,5 +1,4 @@
-import pymysql
-import pymysql.cursors
+import mysql.connector
 from flask import _app_ctx_stack, current_app
 from flask_caching import Cache
 from flask_marshmallow import Marshmallow
@@ -23,29 +22,28 @@ class MySQL:
             app.teardown_appcontext(self.teardown)
 
     @property
-    def connect(self):
-        return pymysql.connect(
+    def connect(self) -> mysql.connector.MySQLConnection:
+        return mysql.connector.connect(
             host=current_app.config["MYSQL_HOST"],
             port=current_app.config["MYSQL_PORT"],
             user=current_app.config["MYSQL_USER"],
             password=current_app.config["MYSQL_PASSWORD"],
             database=current_app.config["MYSQL_DB"],
-            autocommit=current_app.config["MYSQL_AUTOCOMMIT"],
-            cursorclass=pymysql.cursors.DictCursor,
+            autocommit=current_app.config["MYSQL_AUTOCOMMIT"]
         )
 
     @property
-    def connection(self):
+    def connection(self) -> mysql.connector.MySQLConnection:
         ctx = _app_ctx_stack.top
         if ctx is not None:
-            if not hasattr(ctx, "pymysql"):
-                ctx.pymysql = self.connect
-            return ctx.pymysql
+            if not hasattr(ctx, "mysql"):
+                ctx.mysql = self.connect
+            return ctx.mysql
 
     def teardown(self, exception):
         ctx = _app_ctx_stack.top
-        if hasattr(ctx, "pymysql"):
-            ctx.pymysql.close()
+        if hasattr(ctx, "mysql"):
+            ctx.mysql.close()
 
 
 cache = Cache()

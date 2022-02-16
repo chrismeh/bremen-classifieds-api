@@ -3,7 +3,7 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from bremen_classifieds_api.classifieds import Client
+from bremen_classifieds_api.classifieds.client import Client
 
 
 def fixture(file_name: str) -> str:

@@ -1,11 +1,11 @@
 import requests
 from flask import jsonify, Blueprint, abort, request
 
-from bremen_classifieds_api.classifieds import Client
+from bremen_classifieds_api.bin.api.extensions import db
+from bremen_classifieds_api.bin.api.schemas import CategorySchema, ClassifiedsSchema
 from bremen_classifieds_api.classifieds.classifieds import Filter
+from bremen_classifieds_api.classifieds.client import Client
 from bremen_classifieds_api.classifieds.db import CategoryRepository, ClassifiedRepository
-from bremen_classifieds_api.extensions import db
-from bremen_classifieds_api.schemas import CategorySchema, ClassifiedsSchema
 
 bp = Blueprint("categories", __name__, url_prefix="/api/categories")
 

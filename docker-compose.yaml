@@ -6,7 +6,7 @@ services:
       dockerfile: ops/api/Dockerfile
       context: .
     environment:
-      - FLASK_APP=bremen_classifieds_api.app
+      - FLASK_APP=bremen_classifieds_api.bin.api.app
     volumes:
       - ./:/app
     ports:

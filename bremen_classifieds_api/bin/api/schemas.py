@@ -1,6 +1,6 @@
 from marshmallow import fields
 
-from bremen_classifieds_api.extensions import ma
+from bremen_classifieds_api.bin.api.extensions import ma
 
 
 class CategorySchema(ma.Schema):

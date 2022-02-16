@@ -1,12 +1,12 @@
 from flask import Flask
 
-from bremen_classifieds_api.blueprints import bp as categories_blueprint
-from bremen_classifieds_api.extensions import db, ma
+from bremen_classifieds_api.bin.api.extensions import db, ma
+from bremen_classifieds_api.bin.api.routes import bp as categories_blueprint
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.config.from_object("bremen_classifieds_api.config")
+    app.config.from_object("bremen_classifieds_api.bin.api.config")
 
     register_extensions(app)
     register_blueprints(app)

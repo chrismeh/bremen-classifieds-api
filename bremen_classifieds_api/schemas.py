@@ -7,7 +7,7 @@ class CategorySchema(ma.Schema):
     class Meta:
         ordered = True
 
-    category_type = fields.String()
+    id = fields.Integer()
     slug = fields.String()
     title = fields.String()
     classified_count = fields.Integer()
@@ -24,16 +24,10 @@ class ClassifiedsSchema(ma.Schema):
         ordered = True
 
     id = fields.Integer()
-    category_type = fields.String()
-    category_slug = fields.String()
+    category = fields.Pluck(CategorySchema, "id")
     slug = fields.String()
     title = fields.String()
     date = fields.Date()
     url = fields.String()
     has_picture = fields.Boolean()
     is_commercial = fields.Boolean()
-
-    _links = ma.Hyperlinks({"self": ma.AbsoluteURLFor(
-        "categories.get_classifieds_by_category",
-        values=dict(category_type="<category_type>", slug="<category_slug>"))
-    })

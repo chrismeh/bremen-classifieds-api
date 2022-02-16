@@ -2,8 +2,8 @@ from typing import Iterable, List, Optional
 
 import mysql.connector
 
-from bremen_classifieds_api.classifieds.categories import Category
-from bremen_classifieds_api.classifieds.classifieds import Classified
+from bremen_classifieds_api.classifieds.categories import Category, NewCategory
+from bremen_classifieds_api.classifieds.classifieds import Classified, NewClassified
 
 
 class ClassifiedRepository:
@@ -12,7 +12,7 @@ class ClassifiedRepository:
 
     def find_all(self, category: Category) -> List[Classified]:
         query = """
-            SELECT cat.type, cat.slug, c.* FROM classified c
+            SELECT cat.*, c.* FROM classified c
             LEFT JOIN category cat ON cat.id = c.category_id
             WHERE c.category_id = %s
             ORDER BY c.external_id DESC;
@@ -22,7 +22,7 @@ class ClassifiedRepository:
             cursor.execute(query, (category.id,))
             return [self._to_object(row) for row in cursor]
 
-    def insert_many(self, category: Category, classifieds: Iterable[Classified]):
+    def insert_many(self, category: Category, classifieds: Iterable[NewClassified]):
         query = """
             INSERT INTO classified (external_id, category_id, slug, title, url, has_picture, is_commercial, publish_date, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
@@ -34,7 +34,7 @@ class ClassifiedRepository:
             params = [self._to_database(category, classified) for classified in classifieds]
             cursor.executemany(query, params)
 
-    def _to_database(self, category: Category, classified: Classified) -> tuple:
+    def _to_database(self, category: Category, classified: NewClassified) -> tuple:
         return (
             classified.id,
             category.id,
@@ -47,8 +47,14 @@ class ClassifiedRepository:
         )
 
     def _to_object(self, row: tuple) -> Classified:
-        cat_type, cat_slug, classified_id, _, slug, title, url, has_picture, is_commercial, publish_date, *_ = row
-        return Classified(classified_id, cat_type, cat_slug, slug, title, publish_date, url, has_picture, is_commercial)
+        category_data, classified_data = row[:8], row[8:]
+
+        category_id, type, slug, title, classified_count, url, created_at, updated_at = category_data
+        category = Category(category_id, type, slug, title, classified_count, url, created_at, updated_at)
+
+        classified_id, _, slug, title, url, has_picture, is_commercial, publish_date, created_at, updated_at = classified_data
+        return Classified(classified_id, category, slug, title, publish_date, url, has_picture, is_commercial,
+                          created_at, updated_at)
 
 
 class CategoryRepository:
@@ -71,7 +77,7 @@ class CategoryRepository:
 
             return self._to_object(row)
 
-    def insert_many(self, categories: Iterable[Category]):
+    def insert_many(self, categories: Iterable[NewCategory]):
         query = """
             INSERT INTO category (type, slug, title, classified_count, url, created_at, updated_at)
             VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
@@ -84,9 +90,9 @@ class CategoryRepository:
             params = [self._to_database(category) for category in categories]
             cursor.executemany(query, params)
 
-    def _to_database(self, category: Category) -> tuple:
+    def _to_database(self, category: NewCategory) -> tuple:
         return category.category_type, category.slug, category.title, category.classified_count, category.url
 
     def _to_object(self, row: tuple) -> Category:
-        category_id, category_type, slug, title, classified_count, url, *_ = row
-        return Category(category_type, slug, title, classified_count, url, category_id)
+        category_id, category_type, slug, title, classified_count, url, created_at, updated_at = row
+        return Category(category_id, category_type, slug, title, classified_count, url, created_at, updated_at)

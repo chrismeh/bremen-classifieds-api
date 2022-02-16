@@ -14,6 +14,17 @@ services:
     depends_on:
       - db
 
+  worker:
+    image: classified-api
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - C_FORCE_ROOT=1
+    command: celery -A bremen_classifieds_api.bin.tasks worker --loglevel=INFO
+
   db:
     image: mysql:latest
     restart: always
@@ -26,3 +37,9 @@ services:
       - MYSQL_ROOT_PASSWORD=classifieds-root
     ports:
       - "3306:3306"
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"

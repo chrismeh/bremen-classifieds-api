@@ -1,5 +1,7 @@
+import requests
 from flask import jsonify, Blueprint, abort, request
 
+from bremen_classifieds_api.classifieds import Client
 from bremen_classifieds_api.classifieds.classifieds import Filter
 from bremen_classifieds_api.classifieds.db import CategoryRepository, ClassifiedRepository
 from bremen_classifieds_api.extensions import db
@@ -11,8 +13,13 @@ bp = Blueprint("categories", __name__, url_prefix="/api/categories")
 @bp.get("/")
 def get_categories():
     repo = CategoryRepository(db.connection)
-    categories = repo.find_all()
 
+    if request.args.get("update"):
+        client = Client(requests.session())
+        categories = client.get_categories()
+        repo.insert_many(categories)
+
+    categories = repo.find_all()
     return jsonify(CategorySchema(many=True).dump(categories))
 
 
@@ -24,6 +31,11 @@ def get_classifieds_by_category(category_id: int):
     category = category_repo.find_by_id(category_id)
     if category is None:
         abort(404)
+
+    if request.args.get("update"):
+        client = Client(requests.session())
+        classifieds = client.get_classifieds(category)
+        classifieds_repo.insert_many(category, classifieds)
 
     # TODO: Make me filterable again!
     classifieds_list = classifieds_repo.find_all(category)

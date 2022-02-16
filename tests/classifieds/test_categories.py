@@ -1,10 +1,10 @@
-from bremen_classifieds_api.classifieds.categories import Category, parse_categories
+from bremen_classifieds_api.classifieds.categories import parse_categories, NewCategory
 from tests.classifieds.conftest import fixture
 
 
 def test_parse_categories_with_single_category():
     expected_categories = [
-        Category(
+        NewCategory(
             category_type="verkauf-angebote",
             slug="arbeitsplatzangebote-gemeinnuetzig",
             title="Jobangebote gemeinnütziger Einrichtungen",
@@ -18,21 +18,21 @@ def test_parse_categories_with_single_category():
 
 def test_parse_categories_with_multiple_categories():
     expected_categories = [
-        Category(
+        NewCategory(
             category_type="verkauf-angebote",
             slug="arbeitsplatzangebote-gemeinnuetzig",
             title="Jobangebote gemeinnütziger Einrichtungen",
             classified_count=218,
             url="https://schwarzesbrett.bremen.de/verkauf-angebote/rubrik/arbeitsplatzangebote-gemeinnuetzig.html"
         ),
-        Category(
+        NewCategory(
             category_type="kauf-gesuche",
             slug="arbeitsplatzgesuche-kauf",
             title="Arbeitsplatzgesuche",
             classified_count=82,
             url="https://schwarzesbrett.bremen.de/kauf-gesuche/rubrik/arbeitsplatzgesuche-kauf.html"
         ),
-        Category(
+        NewCategory(
             category_type="diverses",
             slug="gemeinschaftliches-wohnen",
             title="Bau- und Mietgemeinschaftsprojekte",

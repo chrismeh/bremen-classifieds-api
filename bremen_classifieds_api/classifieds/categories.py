@@ -1,30 +1,41 @@
 import re
 from dataclasses import dataclass
-from typing import List, Optional
+from datetime import datetime
+from typing import List
 
 from bs4 import BeautifulSoup, Tag
 
 
-# TODO: This data structure doesn't work well with the MySQL database, fix me.
 @dataclass
 class Category:
+    id: int
     category_type: str
     slug: str
     title: str
     classified_count: int
     url: str
-    id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
 
 
-def parse_categories(html: str) -> List[Category]:
+@dataclass
+class NewCategory:
+    category_type: str
+    slug: str
+    title: str
+    classified_count: int
+    url: str
+
+
+def parse_categories(html: str) -> List[NewCategory]:
     soup = BeautifulSoup(html, "html.parser")
     categories = soup.select(".rubriken_list li a")
 
     return [parse_category(category) for category in categories]
 
 
-def parse_category(soup: Tag) -> Category:
-    return Category(
+def parse_category(soup: Tag) -> NewCategory:
+    return NewCategory(
         category_type=parse_category_type(soup),
         slug=parse_category_slug(soup),
         title=parse_category_title(soup),

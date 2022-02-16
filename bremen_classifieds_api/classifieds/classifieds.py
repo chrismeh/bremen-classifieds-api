@@ -5,16 +5,29 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup, Tag
 
+from bremen_classifieds_api.classifieds.categories import Category
 
-# TODO: This data structure doesn't work well with the MySQL database, fix me.
+
 @dataclass
 class Classified:
     id: int
-    category_type: str
-    category_slug: str
+    category: Category
     slug: str
     title: str
     date: datetime.date
+    url: str
+    has_picture: bool
+    is_commercial: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass
+class NewClassified:
+    id: int
+    slug: str
+    title: str
+    date: date
     url: str
     has_picture: bool = False
     is_commercial: bool = False
@@ -27,7 +40,7 @@ class Filter:
     is_commercial: Optional[bool] = None
 
 
-def parse_classifieds(html: str) -> List[Classified]:
+def parse_classifieds(html: str) -> List[NewClassified]:
     soup = BeautifulSoup(html, "html.parser")
     classifieds = soup.select(".eintraege_list li a")
 
@@ -35,12 +48,10 @@ def parse_classifieds(html: str) -> List[Classified]:
     return list(filter(lambda c: c is not None, classifieds))
 
 
-def parse_classified(soup: Tag) -> Optional[Classified]:
+def parse_classified(soup: Tag) -> Optional[NewClassified]:
     try:
-        return Classified(
+        return NewClassified(
             id=parse_classified_id(soup),
-            category_type=parse_classified_category_type(soup),
-            category_slug=parse_classified_category_slug(soup),
             slug=parse_classified_slug(soup),
             title=parse_classified_title(soup),
             date=parse_classified_date(soup),
@@ -55,14 +66,6 @@ def parse_classified(soup: Tag) -> Optional[Classified]:
 
 def parse_classified_id(soup: Tag) -> int:
     return int(re.match(r".+?(\d+)\.html$", soup.attrs["href"]).group(1))
-
-
-def parse_classified_category_type(soup: Tag) -> str:
-    return soup.attrs["href"].split("/")[1]
-
-
-def parse_classified_category_slug(soup: Tag) -> str:
-    return soup.attrs["href"].split("/")[2]
 
 
 def parse_classified_slug(soup: Tag) -> str:

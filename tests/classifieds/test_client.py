@@ -1,9 +1,11 @@
+import datetime
+
 import httpretty
 import pytest
 import requests
 
-from bremen_classifieds_api.classifieds.categories import Category
-from bremen_classifieds_api.classifieds.classifieds import Classified
+from bremen_classifieds_api.classifieds.categories import Category, NewCategory
+from bremen_classifieds_api.classifieds.classifieds import NewClassified
 from bremen_classifieds_api.classifieds.client import Client, HttpError
 from tests.classifieds.conftest import fixture
 
@@ -22,7 +24,7 @@ def test_client_get_categories():
 
     assert type(response) is list
     assert len(response) == 1
-    assert type(response.pop()) is Category
+    assert type(response.pop()) is NewCategory
 
 
 @httpretty.activate
@@ -44,11 +46,14 @@ def test_client_get_categories_with_http_error():
 @httpretty.activate
 def test_client_get_classifieds():
     category = Category(
+        id=1337,
         category_type="verkauf-angebote",
         slug="arbeitsplatzangebote-gemeinnuetzig",
         title="Jobangebote gemeinnütziger Einrichtungen",
         classified_count=218,
-        url="https://schwarzesbrett.bremen.de/verkauf-angebote/rubrik/arbeitsplatzangebote-gemeinnuetzig.html"
+        url="https://schwarzesbrett.bremen.de/verkauf-angebote/rubrik/arbeitsplatzangebote-gemeinnuetzig.html",
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
     )
 
     httpretty.register_uri(
@@ -63,17 +68,20 @@ def test_client_get_classifieds():
 
     assert type(response) is list
     assert len(response) == 1
-    assert type(response.pop()) is Classified
+    assert type(response.pop()) is NewClassified
 
 
 @httpretty.activate
 def test_client_get_classifieds_with_http_error():
     category = Category(
+        id=1337,
         category_type="verkauf-angebote",
         slug="arbeitsplatzangebote-gemeinnuetzig",
         title="Jobangebote gemeinnütziger Einrichtungen",
         classified_count=218,
-        url="https://schwarzesbrett.bremen.de/verkauf-angebote/rubrik/arbeitsplatzangebote-gemeinnuetzig.html"
+        url="https://schwarzesbrett.bremen.de/verkauf-angebote/rubrik/arbeitsplatzangebote-gemeinnuetzig.html",
+        created_at=datetime.datetime.now(),
+        updated_at=datetime.datetime.now(),
     )
 
     httpretty.register_uri(

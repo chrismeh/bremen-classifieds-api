@@ -16,12 +16,12 @@ def get_categories():
     return jsonify(CategorySchema(many=True).dump(categories))
 
 
-@bp.get("/<category_type>/<slug>")
-def get_classifieds_by_category(category_type: str, slug: str):
+@bp.get("/<int:category_id>")
+def get_classifieds_by_category(category_id: int):
     category_repo = CategoryRepository(db.connection)
     classifieds_repo = ClassifiedRepository(db.connection)
 
-    category = category_repo.find_by_slug(category_type, slug)
+    category = category_repo.find_by_id(category_id)
     if category is None:
         abort(404)
 

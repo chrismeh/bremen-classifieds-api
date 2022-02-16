@@ -15,7 +15,7 @@ class CategorySchema(ma.Schema):
 
     _links = ma.Hyperlinks({"classifieds": ma.AbsoluteURLFor(
         "categories.get_classifieds_by_category",
-        values=dict(category_type="<category_type>", slug="<slug>"))
+        values=dict(category_id="<id>"))
     })
 
 

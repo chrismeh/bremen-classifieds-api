@@ -68,10 +68,10 @@ class CategoryRepository:
             cursor.execute(query)
             return [self._to_object(row) for row in cursor]
 
-    def find_by_slug(self, category_type: str, slug: str) -> Optional[Category]:
-        query = "SELECT * FROM category WHERE `type` = %s AND slug = %s LIMIT 1;"
+    def find_by_id(self, category_id: int) -> Optional[Category]:
+        query = "SELECT * FROM category WHERE `id` = %s LIMIT 1;"
         with self._db.cursor() as cursor:
-            cursor.execute(query, (category_type, slug))
+            cursor.execute(query, (category_id,))
             if (row := cursor.fetchone()) is None:
                 return None
 

@@ -1,8 +1,7 @@
-from environs import Env
+from bremen_classifieds_api.platform.config import parse_config
 
-env = Env()
-env.read_env()
+config = parse_config()
 
 accept_content = ["pickle"]
 task_serializer = "pickle"
-broker_url = f"redis://{env.str('REDIS_HOST', 'localhost')}"
+broker_url = f"redis://{config.redis_host}"

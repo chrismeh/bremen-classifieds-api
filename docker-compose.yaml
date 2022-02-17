@@ -23,7 +23,7 @@ services:
       - redis
     environment:
       - C_FORCE_ROOT=1
-    command: celery -A bremen_classifieds_api.bin.tasks worker --loglevel=INFO
+    command: sh -c 'wait-for db:3306 -t 60 -- celery -A bremen_classifieds_api.bin.tasks worker --loglevel=INFO'
 
   db:
     image: mysql:latest

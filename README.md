@@ -11,15 +11,6 @@ $ cp .env.example .env
 $ docker-compose up --build
 ```
 
-Until proper task scheduling is implemented, the task for updating the classifieds must be started manually:
-
-```shell
-$ docker-compose exec api sh
-$ python3
->>> from bremen_classifieds_api.bin.tasks import update_categories
->>> update_categories.delay()
-```
-
 ## API
 
 Get all available categories:

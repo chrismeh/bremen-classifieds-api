@@ -1,6 +1,7 @@
 import mysql.connector
 import requests
 from celery import Celery
+from celery.signals import worker_ready
 from environs import Env
 
 from bremen_classifieds_api.classifieds.categories import Category
@@ -12,6 +13,11 @@ env.read_env()
 
 app = Celery(__name__)
 app.config_from_object("bremen_classifieds_api.bin.tasks.config")
+
+
+@worker_ready.connect
+def schedule_update_jobs(sender, **kwargs):
+    update_categories.delay()
 
 
 @app.task

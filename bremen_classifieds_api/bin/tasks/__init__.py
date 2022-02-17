@@ -1,18 +1,16 @@
-import mysql.connector
 import requests
 from celery import Celery
 from celery.signals import worker_ready
-from environs import Env
 
 from bremen_classifieds_api.classifieds.categories import Category
 from bremen_classifieds_api.classifieds.client import Client
 from bremen_classifieds_api.classifieds.db import CategoryRepository, ClassifiedRepository
-
-env = Env()
-env.read_env()
+from bremen_classifieds_api.platform.config import parse_config
+from bremen_classifieds_api.platform.mysql import connect
 
 app = Celery(__name__)
 app.config_from_object("bremen_classifieds_api.bin.tasks.config")
+app_config = parse_config()
 
 
 @worker_ready.connect
@@ -22,7 +20,7 @@ def schedule_update_jobs(sender, **kwargs):
 
 @app.task
 def update_categories():
-    db = connect_to_database()
+    db = connect(app_config)
 
     client = Client(requests.session())
     category_repo = CategoryRepository(db)
@@ -38,7 +36,7 @@ def update_categories():
 
 @app.task
 def update_classifieds(category: Category):
-    db = connect_to_database()
+    db = connect(app_config)
 
     client = Client(requests.session())
     classifieds_repo = ClassifiedRepository(db)
@@ -47,14 +45,3 @@ def update_classifieds(category: Category):
     classifieds_repo.insert_many(category, classifieds)
 
     db.close()
-
-
-def connect_to_database() -> mysql.connector.MySQLConnection:
-    return mysql.connector.connect(
-        host=env.str("MYSQL_HOST", "localhost"),
-        port=env.int("MYSQL_PORT", 3306),
-        user=env.str("MYSQL_USER", ""),
-        password=env.str("MYSQL_PASSWORD", ""),
-        database=env.str("MYSQL_DB", ""),
-        autocommit=env.bool("MYSQL_AUTOCOMMIT", True)
-    )

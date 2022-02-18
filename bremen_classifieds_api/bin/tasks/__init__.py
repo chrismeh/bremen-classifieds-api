@@ -5,6 +5,7 @@ from celery.signals import worker_ready
 from bremen_classifieds_api.classifieds.categories import Category
 from bremen_classifieds_api.classifieds.client import Client
 from bremen_classifieds_api.classifieds.db import CategoryRepository, ClassifiedRepository
+from bremen_classifieds_api.classifieds.updater import Updater
 from bremen_classifieds_api.platform.config import parse_config
 from bremen_classifieds_api.platform.mysql import connect
 
@@ -22,12 +23,8 @@ def schedule_update_jobs(sender, **kwargs):
 def update_categories():
     db = connect(app_config)
 
-    client = Client(requests.session())
-    category_repo = CategoryRepository(db)
-
-    category_repo.insert_many(client.get_categories())
-
-    categories = category_repo.find_all()
+    updater = Updater(Client(requests.session()), CategoryRepository(db), ClassifiedRepository(db))
+    categories = updater.update_categories()
     db.close()
 
     for category in categories:
@@ -38,10 +35,7 @@ def update_categories():
 def update_classifieds(category: Category):
     db = connect(app_config)
 
-    client = Client(requests.session())
-    classifieds_repo = ClassifiedRepository(db)
-
-    classifieds = client.get_classifieds(category)
-    classifieds_repo.insert_many(category, classifieds)
+    updater = Updater(Client(requests.session()), CategoryRepository(db), ClassifiedRepository(db))
+    updater.update_classifieds(category)
 
     db.close()

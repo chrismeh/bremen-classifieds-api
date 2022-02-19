@@ -1,5 +1,6 @@
 import requests
 from celery import Celery
+from celery.schedules import crontab
 from celery.signals import worker_ready
 
 from bremen_classifieds_api.classifieds.categories import Category
@@ -14,8 +15,16 @@ app.config_from_object("bremen_classifieds_api.bin.tasks.config")
 app_config = parse_config()
 
 
-@worker_ready.connect
+@app.on_after_configure.connect
 def schedule_update_jobs(sender, **kwargs):
+    sender.add_periodic_task(
+        crontab(minute=0, hour="8-20", day_of_week="1-6"),
+        update_categories.s()
+    )
+
+
+@worker_ready.connect
+def schedule_update_jobs_now(sender, **kwargs):
     update_categories.delay()
 
 

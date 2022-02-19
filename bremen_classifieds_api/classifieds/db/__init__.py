@@ -1,4 +1,4 @@
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Callable
 
 import mysql.connector
 
@@ -36,21 +36,16 @@ class ClassifiedRepository:
         if classified_filter is None:
             classified_filter = Filter()
 
-        if classified_filter.search is not None:
-            conditions.append("c.title LIKE CONCAT('%', %s, '%')")
-            params.append(classified_filter.search)
+        def handle_filter(value, condition: str, key: Optional[Callable] = None):
+            if value is None:
+                return
+            conditions.append(condition)
+            params.append(value if key is None else key(value))
 
-        if classified_filter.has_picture is not None:
-            conditions.append("c.has_picture = %s")
-            params.append(classified_filter.has_picture)
-
-        if classified_filter.is_commercial is not None:
-            conditions.append("c.is_commercial = %s")
-            params.append(classified_filter.is_commercial)
-
-        if classified_filter.updated_since is not None:
-            conditions.append("c.updated_at >= %s")
-            params.append(classified_filter.updated_since.strftime("%Y-%m-%d %H:%M:%S"))
+        handle_filter(classified_filter.search, "c.title LIKE CONCAT('%', %s, '%')")
+        handle_filter(classified_filter.has_picture, "c.has_picture = %s")
+        handle_filter(classified_filter.is_commercial, "c.is_commercial = %s")
+        handle_filter(classified_filter.updated_since, "c.updated_at >= %s", lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))
 
         where_string = " AND ".join(conditions)
         params = tuple(params)

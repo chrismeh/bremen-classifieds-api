@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional, Callable
 
 from flask import jsonify, Blueprint, request
 
@@ -38,17 +39,16 @@ def get_classifieds_by_category(category_id: int):
 
 
 def parse_classifieds_filter() -> Filter:
-    f = Filter()
-    if (search := request.args.get("search")) is not None:
-        f.search = search
+    def parse_request_arg(arg: str, key: Optional[Callable] = None):
+        if (value := request.args.get(arg)) is None:
+            return None
+        return value if key is None else key(value)
 
-    if (has_picture := request.args.get("has_picture")) is not None:
-        f.has_picture = has_picture == "1"
-
-    if (is_commercial := request.args.get("is_commercial")) is not None:
-        f.is_commercial = is_commercial == "1"
-
-    if (updated_since := request.args.get("updated_since")) is not None:
-        f.updated_since = datetime.strptime(updated_since, "%Y-%m-%d %H:%M:%S")
+    f = Filter(
+        search=parse_request_arg("search"),
+        has_picture=parse_request_arg("has_picture", lambda x: x == "1"),
+        is_commercial=parse_request_arg("is_commercial", lambda x: x == "1"),
+        updated_since=parse_request_arg("updated_since", lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S")),
+    )
 
     return f

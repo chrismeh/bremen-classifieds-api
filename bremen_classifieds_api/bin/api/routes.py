@@ -1,4 +1,6 @@
-from flask import jsonify, Blueprint, abort, request
+from datetime import datetime
+
+from flask import jsonify, Blueprint, request
 
 from bremen_classifieds_api.bin.api.extensions import db
 from bremen_classifieds_api.bin.api.schemas import CategorySchema, ClassifiedsSchema
@@ -18,14 +20,20 @@ def get_categories():
 
 @bp.get("/<int:category_id>")
 def get_classifieds_by_category(category_id: int):
+    try:
+        classified_filter = parse_classifieds_filter()
+    except ValueError as err:
+        print(err)
+        return jsonify(error="Bad Request"), 400
+
     category_repo = CategoryRepository(db.connection)
     classifieds_repo = ClassifiedRepository(db.connection)
 
     category = category_repo.find_by_id(category_id)
     if category is None:
-        abort(404)
+        return jsonify(error="Not Found"), 404
 
-    classifieds_list = classifieds_repo.find_all(category, parse_classifieds_filter())
+    classifieds_list = classifieds_repo.find_all(category, classified_filter)
     return jsonify(ClassifiedsSchema(many=True).dump(classifieds_list))
 
 
@@ -39,5 +47,8 @@ def parse_classifieds_filter() -> Filter:
 
     if (is_commercial := request.args.get("is_commercial")) is not None:
         f.is_commercial = is_commercial == "1"
+
+    if (updated_since := request.args.get("updated_since")) is not None:
+        f.updated_since = datetime.strptime(updated_since, "%Y-%m-%d %H:%M:%S")
 
     return f

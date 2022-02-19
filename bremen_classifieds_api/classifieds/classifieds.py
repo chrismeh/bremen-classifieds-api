@@ -38,6 +38,7 @@ class Filter:
     search: Optional[str] = None
     has_picture: Optional[bool] = None
     is_commercial: Optional[bool] = None
+    updated_since: Optional[datetime] = None
 
 
 def parse_classifieds(html: str) -> List[NewClassified]:

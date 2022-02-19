@@ -48,6 +48,10 @@ class ClassifiedRepository:
             conditions.append("c.is_commercial = %s")
             params.append(classified_filter.is_commercial)
 
+        if classified_filter.updated_since is not None:
+            conditions.append("c.updated_at >= %s")
+            params.append(classified_filter.updated_since.strftime("%Y-%m-%d %H:%M:%S"))
+
         where_string = " AND ".join(conditions)
         params = tuple(params)
 

@@ -22,11 +22,11 @@ $ curl localhost:5000/api/categories/
 Get classifieds from a category:
 
 ```shell
-$ curl localhost:5000/api/categories/verkauf-angebote/bildung-nachhilfe-verkauf
+$ curl localhost:5000/api/categories/4
 ```
 
-(currently defect) Filter classifieds by either `search`, `has_picture` or `is_commercial`:
+Filter classifieds by either `search`, `has_picture` or `is_commercial`:
 
 ```shell
-$ curl localhost:5000/api/categories/verkauf-angebote/bildung-nachhilfe-verkauf?search=englisch&is_commercial=0&has_picture=1
+$ curl localhost:5000/api/categories/1?has_picture=1&search=P%C3%A4dagoge&is_commercial=0
 ```

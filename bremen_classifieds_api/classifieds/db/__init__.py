@@ -3,23 +3,18 @@ from typing import Iterable, List, Optional
 import mysql.connector
 
 from bremen_classifieds_api.classifieds.categories import Category, NewCategory
-from bremen_classifieds_api.classifieds.classifieds import Classified, NewClassified
+from bremen_classifieds_api.classifieds.classifieds import Classified, NewClassified, Filter
 
 
 class ClassifiedRepository:
     def __init__(self, db: mysql.connector.MySQLConnection):
         self._db = db
 
-    def find_all(self, category: Category) -> List[Classified]:
-        query = """
-            SELECT cat.*, c.* FROM classified c
-            LEFT JOIN category cat ON cat.id = c.category_id
-            WHERE c.category_id = %s
-            ORDER BY c.external_id DESC;
-        """
+    def find_all(self, category: Category, classified_filter: Optional[Filter] = None) -> List[Classified]:
+        query, params = self._build_find_all_query(category, classified_filter)
 
-        with self._db.cursor() as cursor:
-            cursor.execute(query, (category.id,))
+        with self._db.cursor(prepared=True) as cursor:
+            cursor.execute(query, params)
             return [ClassifiedMapper.to_object(row) for row in cursor]
 
     def insert_many(self, category: Category, classifieds: Iterable[NewClassified]):
@@ -33,6 +28,37 @@ class ClassifiedRepository:
         with self._db.cursor(prepared=True) as cursor:
             params = [ClassifiedMapper.to_database(category, classified) for classified in classifieds]
             cursor.executemany(query, params)
+
+    def _build_find_all_query(self, category: Category, classified_filter: Optional[Filter]) -> tuple:
+        conditions = ["c.category_id = %s"]
+        params = [category.id]
+
+        if classified_filter is None:
+            classified_filter = Filter()
+
+        if classified_filter.search is not None:
+            conditions.append("c.title LIKE CONCAT('%', %s, '%')")
+            params.append(classified_filter.search)
+
+        if classified_filter.has_picture is not None:
+            conditions.append("c.has_picture = %s")
+            params.append(classified_filter.has_picture)
+
+        if classified_filter.is_commercial is not None:
+            conditions.append("c.is_commercial = %s")
+            params.append(classified_filter.is_commercial)
+
+        where_string = " AND ".join(conditions)
+        params = tuple(params)
+
+        query = f"""
+            SELECT cat.*, c.* FROM classified c
+            LEFT JOIN category cat ON cat.id = c.category_id
+            WHERE {where_string}
+            ORDER BY c.external_id DESC;
+        """
+
+        return query, params
 
 
 class ClassifiedMapper:
@@ -66,13 +92,13 @@ class CategoryRepository:
     def find_all(self) -> List[Category]:
         query = "SELECT * FROM category;"
 
-        with self._db.cursor() as cursor:
+        with self._db.cursor(prepared=True) as cursor:
             cursor.execute(query)
             return [CategoryMapper.to_object(row) for row in cursor]
 
     def find_by_id(self, category_id: int) -> Optional[Category]:
         query = "SELECT * FROM category WHERE `id` = %s LIMIT 1;"
-        with self._db.cursor() as cursor:
+        with self._db.cursor(prepared=True) as cursor:
             cursor.execute(query, (category_id,))
             if (row := cursor.fetchone()) is None:
                 return None

@@ -37,8 +37,7 @@ def get_classifieds_by_category(category_id: int):
         classifieds = client.get_classifieds(category)
         classifieds_repo.insert_many(category, classifieds)
 
-    # TODO: Make me filterable again!
-    classifieds_list = classifieds_repo.find_all(category)
+    classifieds_list = classifieds_repo.find_all(category, parse_classifieds_filter())
     return jsonify(ClassifiedsSchema(many=True).dump(classifieds_list))
 
 
